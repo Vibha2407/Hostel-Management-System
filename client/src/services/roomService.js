@@ -1,0 +1,27 @@
+import api from "./axios";
+
+export const getAllRooms = async () => {
+  try {
+    const response = await api.get("/rooms");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getRoomById = async (id) => {
+  try {
+    const response = await api.get(`/rooms/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createRoom = async (roomData) => {
+  try {
+    const response = await api.post("/rooms", roomData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
