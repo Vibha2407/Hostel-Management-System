@@ -5,6 +5,7 @@ import AdminDashboard from "../pages/admin/AdminDashBoard";
 import Rooms from "../pages/admin/Rooms";
 import AddRoom from "../pages/admin/AddRooms";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import EditRoom from "../pages/admin/EditRooms";
 
 const AdminRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
         <Route index element={<AdminDashboard />} />
         <Route path="rooms" element={<Rooms />} />
         <Route path="add-room" element={<AddRoom />} />
+        <Route path="rooms/edit/:id" element={<EditRoom />} />
       </Route>
     </Routes>
   );

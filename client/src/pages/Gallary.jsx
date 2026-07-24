@@ -1,7 +1,7 @@
 import React from "react";
 
 const Gallary = () => {
-  return <div>Gallry</div>;
+  return <div>Gallray</div>;
 };
 
 export default Gallary;

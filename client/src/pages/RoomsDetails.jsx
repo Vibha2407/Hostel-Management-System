@@ -35,7 +35,7 @@ const RoomDetails = () => {
           <div className="h-[450px] rounded-3xl overflow-hidden bg-gray-200 flex items-center justify-center">
             {room.roomImages?.length > 0 ? (
               <img
-                src={room.roomImages[0].url}
+                src={room.roomImages[0]}
                 alt={room.roomNumber}
                 className="w-full h-full object-cover"
               />

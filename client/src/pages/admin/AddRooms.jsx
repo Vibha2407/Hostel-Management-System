@@ -1,12 +1,19 @@
 import { useState } from "react";
+import { createRoom } from "../../services/roomService";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const facilityOptions = [
-  "WiFi",
-  "AC",
-  "Laundry",
-  "Parking",
-  "Food",
-  "Power Backup",
+  { label: "WiFi", value: "wifi" },
+  { label: "Parking", value: "parking" },
+  { label: "Laundry", value: "laundry" },
+  { label: "Food", value: "food" },
+  { label: "Juice Corner", value: "juiceCorner" },
+  { label: "Bike Parking", value: "bikeParking" },
+  { label: "Scooty Parking", value: "scootyParking" },
+  { label: "Power Backup", value: "powerBackup" },
+  { label: "Hot Water", value: "hotWater" },
+  { label: "CCTV", value: "cctv" },
 ];
 
 const AddRoom = () => {
@@ -16,17 +23,29 @@ const AddRoom = () => {
     roomType: "AC",
     sharingType: "2 Sharing",
     totalBeds: "",
-    availableBeds: "",
     occupiedBeds: "",
     pricePerDay: "",
     pricePerWeek: "",
     pricePerMonth: "",
     status: "Available",
     description: "",
-    facilities: [],
+
+    facilities: {
+      wifi: false,
+      parking: false,
+      laundry: false,
+      food: false,
+      juiceCorner: false,
+      bikeParking: false,
+      scootyParking: false,
+      powerBackup: false,
+      hotWater: false,
+      cctv: false,
+    },
   });
 
   const [roomImages, setRoomImages] = useState([]);
+  const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -41,26 +60,48 @@ const AddRoom = () => {
       [e.target.name]: e.target.value,
     });
   };
+  // Remove image
+  const removeImage = (indexToRemove) => {
+    setRoomImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
 
   // Handle Facilities
   const handleFacilityChange = (facility) => {
-    setFormData((prev) => {
-      const exists = prev.facilities.includes(facility);
-
-      return {
-        ...prev,
-        facilities: exists
-          ? prev.facilities.filter((item) => item !== facility)
-          : [...prev.facilities, facility],
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      facilities: {
+        ...prev.facilities,
+        [facility]: !prev.facilities[facility],
+      },
+    }));
   };
 
   // Submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    try {
+      const roomData = {
+        ...formData,
+
+        // We are only previewing images for now,
+        // so send an empty array to the backend.
+        roomImages: [],
+      };
+
+      console.log("Sending Data:", roomData);
+
+      const data = await createRoom(roomData);
+      console.log(JSON.stringify(roomData, null, 2));
+
+      toast.success(data.message);
+
+      navigate("/admin/rooms");
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error.response?.data?.message || "Failed to create room.");
+    }
   };
 
   return (
@@ -95,7 +136,7 @@ const AddRoom = () => {
           className="border !p-3 rounded-lg"
         >
           <option>AC</option>
-          <option>Non AC</option>
+          <option>Non-AC</option>
         </select>
 
         {/* Sharing */}
@@ -105,7 +146,6 @@ const AddRoom = () => {
           onChange={handleChange}
           className="border !p-3 rounded-lg"
         >
-          <option>1 Sharing</option>
           <option>2 Sharing</option>
           <option>3 Sharing</option>
           <option>4 Sharing</option>
@@ -117,15 +157,6 @@ const AddRoom = () => {
           type="number"
           value={formData.totalBeds}
           placeholder="Total Beds"
-          onChange={handleChange}
-          className="border !p-3 rounded-lg"
-        />
-
-        <input
-          name="availableBeds"
-          type="number"
-          value={formData.availableBeds}
-          placeholder="Available Beds"
           onChange={handleChange}
           className="border !p-3 rounded-lg"
         />
@@ -196,15 +227,16 @@ const AddRoom = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 !gap-4">
             {facilityOptions.map((facility) => (
               <label
-                key={facility}
+                key={facility.value}
                 className="flex items-center !gap-2 border rounded-lg !p-3 cursor-pointer hover:bg-gray-50"
               >
                 <input
                   type="checkbox"
-                  checked={formData.facilities.includes(facility)}
-                  onChange={() => handleFacilityChange(facility)}
+                  checked={formData.facilities[facility.value]}
+                  onChange={() => handleFacilityChange(facility.value)}
                 />
-                {facility}
+
+                {facility.label}
               </label>
             ))}
           </div>

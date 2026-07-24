@@ -20,7 +20,7 @@ export const createRoom = async (req, res) => {
 // Get All Rooms
 export const getAllRooms = async (req, res) => {
   try {
-    const rooms = await Room.find().populate("facilities").populate("rules");
+    const rooms = await Room.find().populate("rules");
 
     res.status(200).json({
       success: true,
@@ -38,9 +38,7 @@ export const getAllRooms = async (req, res) => {
 // Get Single Room
 export const getSingleRoom = async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id)
-      .populate("facilities")
-      .populate("rules");
+    const room = await Room.findById(req.params.id).populate("rules");
 
     if (!room) {
       return res.status(404).json({
@@ -156,7 +154,7 @@ export const filterRooms = async (req, res) => {
     }
 
     const rooms = await Room.find(filter)
-      .populate("facilities")
+      // .populate("facilities")
       .populate("rules");
 
     res.status(200).json({

@@ -64,8 +64,55 @@ const roomSchema = new mongoose.Schema(
     ],
 
     facilities: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Facility",
+      wifi: {
+        type: Boolean,
+        default: false,
+      },
+
+      parking: {
+        type: Boolean,
+        default: false,
+      },
+
+      laundry: {
+        type: Boolean,
+        default: false,
+      },
+
+      food: {
+        type: Boolean,
+        default: false,
+      },
+
+      juiceCorner: {
+        type: Boolean,
+        default: false,
+      },
+
+      bikeParking: {
+        type: Boolean,
+        default: false,
+      },
+
+      scootyParking: {
+        type: Boolean,
+        default: false,
+      },
+
+      powerBackup: {
+        type: Boolean,
+        default: false,
+      },
+
+      hotWater: {
+        type: Boolean,
+        default: false,
+      },
+
+      cctv: {
+        type: Boolean,
+        default: false,
+      },
     },
 
     rules: {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const BookingCard = ({ room }) => {
   const [checkIn, setCheckIn] = useState("");
@@ -49,9 +50,12 @@ const BookingCard = ({ room }) => {
         Total:
         <span className="text-[#D4AF37]"> ₹{totalPrice}</span>
       </p>
-      <button className="w-full bg-[#D4AF37] text-white !py-3 rounded-xl hover:bg-yellow-600 transition">
+      <Link
+        to={`/booking/${room._id}`}
+        className="bg-[#D4AF37] text-white px-10 py-4 rounded-xl inline-block"
+      >
         Book Now
-      </button>
+      </Link>
     </div>
   );
 };

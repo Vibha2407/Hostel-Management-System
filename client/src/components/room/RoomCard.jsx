@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 const RoomCard = ({ room }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-      <div className="h-52 bg-gray-200 flex items-center justify-center">
-        <span className="text-gray-500">Room Image</span>
-      </div>
+      <img
+        src={room.roomImages?.[0] || "/placeholder.jpg"}
+        alt={room.roomNumber}
+        className="w-full !h-52 object-cover"
+      />
 
       <div className="!p-5">
         <h2 className="text-xl font-bold">Room {room.roomNumber}</h2>

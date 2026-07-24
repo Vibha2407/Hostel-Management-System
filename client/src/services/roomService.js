@@ -25,3 +25,7 @@ export const createRoom = async (roomData) => {
     throw error;
   }
 };
+export const updateRoom = async (id, roomData) => {
+  const response = await api.put(`/rooms/${id}`, roomData);
+  return response.data;
+};
