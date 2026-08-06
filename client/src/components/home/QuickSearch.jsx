@@ -22,7 +22,7 @@ const QuickSearch = () => {
   };
 
   return (
-    <section className="max-w-7xl !mx-auto !mt-14 relative !z-20 !px-6">
+    <section className="!max-w-7xl !mx-auto !mt-14 relative !z-20 !px-6">
       <div className="bg-white rounded-2xl shadow-xl !p-8">
         <h2 className="text-2xl font-bold !mb-8">Search Your Perfect Room</h2>
 

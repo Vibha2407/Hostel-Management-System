@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { getMyBookings } from "../../services/bookingService";
 
+import BookingCard from "../../components/customer/BookingCard";
+// import { useNavigate } from "react-router-dom";
+
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
 
@@ -18,42 +21,25 @@ const MyBookings = () => {
   }, []);
 
   return (
-    <div className="!max-w-7xl !mx-auto !px-6 !py-10">
-      <h1 className="text-4xl !font-bold !mb-8">My Bookings</h1>
+    <section className="!max-w-7xl !mx-auto !px-6 !py-10">
+      <h1 className="text-4xl font-bold !mb-10">My Bookings</h1>
 
-      {bookings.length === 0 ? (
-        <p>No bookings found.</p>
-      ) : (
-        <div className="!space-y-6">
-          {bookings.map((booking) => (
-            <div
+      <div className="!space-y-8">
+        {bookings.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">
+            No bookings available.
+          </div>
+        ) : (
+          bookings.map((booking) => (
+            <BookingCard
               key={booking._id}
-              className="bg-white rounded-xl shadow-md !p-6"
-            >
-              <h2 className="!text-2xl !font-bold">
-                Room {booking.room.roomNumber}
-              </h2>
-
-              <p>Booking Type: {booking.bookingType}</p>
-
-              <p>
-                Check In: {new Date(booking.checkInDate).toLocaleDateString()}
-              </p>
-
-              <p>
-                Check Out: {new Date(booking.checkOutDate).toLocaleDateString()}
-              </p>
-
-              <p>Guests: {booking.numberOfGuests}</p>
-
-              <p>Total Amount: ₹{booking.totalAmount}</p>
-
-              <p>Status: {booking.bookingStatus}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+              booking={booking}
+              // fetchBookings={fetchBookings}
+            />
+          ))
+        )}
+      </div>
+    </section>
   );
 };
 

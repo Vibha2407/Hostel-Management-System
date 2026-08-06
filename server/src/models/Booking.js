@@ -68,10 +68,29 @@ const bookingSchema = new mongoose.Schema(
       default: "Pending",
     },
 
+    refundAmount: {
+      type: Number,
+      default: 0,
+    },
+
+    refundDate: {
+      type: Date,
+    },
+
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Paid", "Failed"],
+      enum: ["Pending", "Paid", "Refund Initiated", "Refunded"],
       default: "Pending",
+    },
+
+    refundStatus: {
+      type: String,
+      enum: ["Not Required", "Initiated", "Completed"],
+      default: "Not Required",
+    },
+
+    refundDate: {
+      type: Date,
     },
 
     specialRequest: {

@@ -44,11 +44,11 @@ const features = [
 
 const WhyChooseUs = () => {
   return (
-    <section className="max-w-7xl !mx-auto !px-6 !py-20">
-      <div className="text-center mb-14">
+    <section className="!max-w-7xl !mx-auto !px-6 !py-20">
+      <div className="text-center !mb-14">
         <h2 className="text-4xl font-bold text-[#2C2C2C]">Why Choose Us?</h2>
 
-        <p className="text-gray-500 !mt-4 max-w-2xl !mx-auto">
+        <p className="text-gray-500 !mt-4 !max-w-2xl !mx-auto">
           We provide a comfortable, secure and affordable hostel experience with
           premium facilities designed for students and working professionals.
         </p>
@@ -63,9 +63,9 @@ const WhyChooseUs = () => {
               scale: 1.03,
             }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl shadow-md p-8 text-center border hover:border-[#D4AF37]"
+            className="bg-white rounded-2xl shadow-md !p-8 text-center border hover:border-[#D4AF37]"
           >
-            <div className="w-16 h-16 rounded-full bg-[#D4AF37]/20 flex items-center justify-center mx-auto text-[#D4AF37]">
+            <div className="!w-16 !h-16 rounded-full bg-[#D4AF37]/20 flex items-center justify-center mx-auto text-[#D4AF37]">
               {item.icon}
             </div>
 

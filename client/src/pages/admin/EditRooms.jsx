@@ -85,7 +85,18 @@ const EditRoom = () => {
         pricePerMonth: data.room.pricePerMonth,
         status: data.room.status,
         description: data.room.description || "",
-        facilities: [],
+        facilities: data.room.facilities || {
+          wifi: false,
+          parking: false,
+          laundry: false,
+          food: false,
+          juiceCorner: false,
+          bikeParking: false,
+          scootyParking: false,
+          powerBackup: false,
+          hotWater: false,
+          cctv: false,
+        },
       });
     } catch (error) {
       console.log(error);
@@ -251,7 +262,7 @@ const EditRoom = () => {
               >
                 <input
                   type="checkbox"
-                  checked={formData.facilities[facility.value]}
+                  checked={!!formData.facilities[facility.value]}
                   onChange={() => handleFacilityChange(facility.value)}
                 />
 

@@ -12,7 +12,6 @@ export const createBooking = async (req, res) => {
       specialRequest,
     } = req.body;
 
-    // Check Room
     const selectedRoom = await Room.findById(room);
 
     if (!selectedRoom) {
@@ -22,23 +21,23 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Check Availability
-    if (selectedRoom.availableBeds <= 0) {
+    // Check available beds
+    const availableBeds = selectedRoom.totalBeds - selectedRoom.occupiedBeds;
+
+    if (availableBeds <= 0) {
       return res.status(400).json({
         success: false,
         message: "Room is full.",
       });
     }
 
-    // Check Number of Guests
-    if (numberOfGuests > selectedRoom.availableBeds) {
+    if (numberOfGuests > availableBeds) {
       return res.status(400).json({
         success: false,
         message: "Not enough beds available.",
       });
     }
 
-    // Date Validation
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);
 
@@ -49,9 +48,7 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Calculate Duration
-    const timeDifference = checkOut - checkIn;
-    const totalDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    const totalDays = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
 
     let totalAmount = 0;
 
@@ -75,7 +72,6 @@ export const createBooking = async (req, res) => {
         });
     }
 
-    // Create Booking
     const booking = await Booking.create({
       user: req.user._id,
       room,
@@ -85,19 +81,33 @@ export const createBooking = async (req, res) => {
       numberOfGuests,
       specialRequest,
       totalAmount,
+      paymentStatus: "Paid",
+      bookingStatus: "Confirmed",
+      refundStatus: "Not Required",
     });
 
-    // Update Room
-    selectedRoom.occupiedBeds += numberOfGuests;
-    selectedRoom.availableBeds -= numberOfGuests;
+    // Update occupied beds only
+    selectedRoom.occupiedBeds += Number(numberOfGuests);
 
-    if (selectedRoom.availableBeds <= 0) {
+    if (selectedRoom.occupiedBeds >= selectedRoom.totalBeds) {
       selectedRoom.status = "Full";
+    } else {
+      selectedRoom.status = "Available";
     }
 
     await selectedRoom.save();
 
-    // Success Response
+    await booking.populate([
+      {
+        path: "user",
+        select: "fullName email phone",
+      },
+      {
+        path: "room",
+        select: "roomNumber roomType sharingType",
+      },
+    ]);
+
     res.status(201).json({
       success: true,
       message: "Booking created successfully.",
@@ -163,7 +173,6 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Prevent cancelling twice
     if (booking.bookingStatus === "Cancelled") {
       return res.status(400).json({
         success: false,
@@ -171,27 +180,47 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Find Room
     const room = await Room.findById(booking.room);
 
-    // Update Room
-    room.occupiedBeds -= booking.numberOfGuests;
-    room.availableBeds += booking.numberOfGuests;
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: "Room not found.",
+      });
+    }
 
-    if (room.availableBeds > 0) {
+    // Prevent negative occupied beds
+    room.occupiedBeds = Math.max(room.occupiedBeds - booking.numberOfGuests, 0);
+
+    if (room.occupiedBeds < room.totalBeds) {
       room.status = "Available";
+    } else {
+      room.status = "Full";
     }
 
     await room.save();
 
-    // Update Booking
     booking.bookingStatus = "Cancelled";
+    booking.paymentStatus = "Refund Initiated";
+    booking.refundAmount = booking.totalAmount;
+    booking.refundStatus = "Completed";
+    booking.refundDate = new Date();
 
     await booking.save();
 
+    await booking.populate([
+      {
+        path: "room",
+      },
+      {
+        path: "user",
+        select: "fullName email phone",
+      },
+    ]);
+
     res.status(200).json({
       success: true,
-      message: "Booking cancelled successfully.",
+      message: "Booking cancelled successfully. Refund completed.",
       booking,
     });
   } catch (error) {
@@ -308,11 +337,12 @@ export const checkOutBooking = async (req, res) => {
     await booking.save();
 
     // Update room
-    room.occupiedBeds -= booking.numberOfGuests;
-    room.availableBeds += booking.numberOfGuests;
+    room.occupiedBeds = Math.max(room.occupiedBeds - booking.numberOfGuests, 0);
 
-    if (room.availableBeds > 0) {
+    if (room.occupiedBeds < room.totalBeds) {
       room.status = "Available";
+    } else {
+      room.status = "Full";
     }
 
     await room.save();

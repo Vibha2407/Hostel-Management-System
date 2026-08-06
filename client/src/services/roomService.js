@@ -20,12 +20,31 @@ export const getRoomById = async (id) => {
 export const createRoom = async (roomData) => {
   try {
     const response = await api.post("/rooms", roomData);
+
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
+// export const createRoom = async (roomData) => {
+//   try {
+//     const response = await api.post("/rooms", roomData);
+//     return response.data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 export const updateRoom = async (id, roomData) => {
   const response = await api.put(`/rooms/${id}`, roomData);
   return response.data;
+};
+
+export const deleteRoom = async (id) => {
+  try {
+    const response = await api.delete(`/rooms/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };

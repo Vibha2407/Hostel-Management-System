@@ -10,14 +10,19 @@ const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       const data = await getProfile();
+
+      console.log("PROFILE API RESPONSE", data);
+
       setUser(data.user);
+      return data.user;
     } catch (error) {
+      console.log("PROFILE ERROR", error);
+
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchProfile();
   }, []);

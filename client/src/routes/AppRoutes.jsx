@@ -9,6 +9,7 @@ import ManageCustomers from "../pages/admin/ManageCustomer";
 import ManagePayments from "../pages/admin/ManagePayments";
 import ManageFacilities from "../pages/admin/ManageFacilities";
 import ManageReports from "../pages/admin/ManageReports";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 
 import Home from "../pages/Home";
 import About from "../pages/About";
@@ -21,6 +22,7 @@ import Contact from "../pages/Contact";
 import Error404 from "../pages/Error404";
 import CustomerRoutes from "./CustomerRoutes";
 import Booking from "../pages/Booking";
+import Payment from "../pages/Payments";
 
 // import EditRoom from "../pages/admin/EditRooms";
 
@@ -41,9 +43,23 @@ const AppRoutes = () => {
           <Route path="/register" element={<Register />} />
         </Route>
         {/* Customer Routes */}
-        <Route path="/customer/*" element={<CustomerRoutes />} />
+        <Route
+          path="/customer/*"
+          element={
+            <ProtectedRoute role="customer">
+              <CustomerRoutes />
+            </ProtectedRoute>
+          }
+        />
         {/* Admin Routes */}
-        <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminRoutes />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/rooms/:id" element={<RoomsDetails />} />
         <Route path="/admin/bookings" element={<ManageBookings />} />
         <Route path="/admin/customers" element={<ManageCustomers />} />
@@ -52,6 +68,7 @@ const AppRoutes = () => {
         <Route path="/admin/reports" element={<ManageReports />} />
 
         <Route path="/booking/:id" element={<Booking />} />
+        <Route path="/payment" element={<Payment />} />
 
         <Route path="*" element={<Error404 />} />
       </Routes>

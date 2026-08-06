@@ -1,11 +1,14 @@
+import Sidebar from "../components/customer/Sidebar";
 import { Outlet } from "react-router-dom";
 
 const CustomerLayout = () => {
   return (
-    <div>
-      <h1>Customer Layout</h1>
+    <div className="flex bg-gray-100">
+      <Sidebar />
 
-      <Outlet />
+      <main className="flex-1 !p-8">
+        <Outlet />
+      </main>
     </div>
   );
 };

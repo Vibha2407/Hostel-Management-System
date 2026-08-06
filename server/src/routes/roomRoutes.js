@@ -1,4 +1,5 @@
 import express from "express";
+// import upload from "../middleware/upload.js";
 import {
   createRoom,
   getAllRooms,
@@ -12,7 +13,13 @@ import { isAdmin } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", isAuthenticated, isAdmin, createRoom);
+router.post(
+  "/",
+  isAuthenticated,
+  isAdmin,
+
+  createRoom,
+);
 router.get("/", getAllRooms);
 router.get("/filter", filterRooms);
 router.get("/:id", getSingleRoom);

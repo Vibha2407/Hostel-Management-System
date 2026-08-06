@@ -1,9 +1,35 @@
 import Room from "../models/Room.js";
+// import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 // Create Room
+// export const createRoom = async (req, res) => {
+//   try {
+//     const room = await Room.create(req.body);
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Room created successfully.",
+//       room,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+import Booking from "../models/Booking.js";
 export const createRoom = async (req, res) => {
   try {
-    const room = await Room.create(req.body);
+    console.log(req.body);
+
+    if (typeof req.body.facilities === "string") {
+      req.body.facilities = JSON.parse(req.body.facilities);
+    }
+
+    const room = await Room.create({
+      ...req.body,
+    });
 
     res.status(201).json({
       success: true,
@@ -87,9 +113,11 @@ export const updateRoom = async (req, res) => {
   }
 };
 // Delete Room
+//
+
 export const deleteRoom = async (req, res) => {
   try {
-    const room = await Room.findByIdAndDelete(req.params.id);
+    const room = await Room.findById(req.params.id);
 
     if (!room) {
       return res.status(404).json({
@@ -97,6 +125,36 @@ export const deleteRoom = async (req, res) => {
         message: "Room not found.",
       });
     }
+
+    // Check if room is used in bookings
+    const bookingExists = await Booking.findOne({
+      room: room._id,
+      bookingStatus: {
+        $ne: "Cancelled",
+      },
+    });
+
+    if (bookingExists) {
+      return res.status(400).json({
+        success: false,
+        message: "This room has active bookings. You cannot delete it.",
+      });
+    }
+
+    // Delete Cloudinary Images
+    if (room.roomImages?.length) {
+      for (const image of room.roomImages) {
+        const publicId = image.split("/").slice(-2).join("/").split(".")[0];
+
+        try {
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.log(err.message);
+        }
+      }
+    }
+
+    await room.deleteOne();
 
     res.status(200).json({
       success: true,
@@ -109,7 +167,6 @@ export const deleteRoom = async (req, res) => {
     });
   }
 };
-
 export const filterRooms = async (req, res) => {
   try {
     const { roomType, sharingType, status, minPrice, maxPrice, roomNumber } =

@@ -6,7 +6,7 @@ const RoomCard = ({ room }) => {
       <img
         src={room.roomImages?.[0] || "/placeholder.jpg"}
         alt={room.roomNumber}
-        className="w-full !h-52 object-cover"
+        className="!w-full !h-52 object-cover"
       />
 
       <div className="!p-5">
@@ -17,20 +17,22 @@ const RoomCard = ({ room }) => {
         <p>Sharing : {room.sharingType}</p>
 
         <p>₹{room.pricePerDay}/day</p>
+        <p className="!mt-2">
+          Beds Available : {room.availableBeds}/{room.totalBeds}
+        </p>
 
         <span
-          className={`inline-block !mt-3 !px-3 !py-1 rounded-full text-sm
-          ${
-            room.isAvailable
+          className={`inline-block !mt-3 !px-3 !py-1 rounded-full text-sm ${
+            room.availableBeds > 0
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }`}
         >
-          {room.isAvailable ? "Available" : "Occupied"}
+          {room.availableBeds > 0 ? "Available" : "Occupied"}
         </span>
         <Link
           to={`/rooms/${room._id}`}
-          className="mt-5 inline-block w-full bg-[#D4AF37] text-white text-center py-3 rounded-xl hover:bg-yellow-600 transition"
+          className="!mt-5 inline-block !w-full bg-[#D4AF37] text-white text-center !py-3 rounded-xl hover:bg-yellow-600 transition"
         >
           View Details
         </Link>

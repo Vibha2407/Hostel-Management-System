@@ -7,23 +7,23 @@ const Hero = () => {
 
   return (
     <section className="bg-[#F8F9FA] !min-h-[90vh] flex items-center">
-      <div className="!max-w-7xl !mx-auto! !px-6 grid lg:grid-cols-2 !gap-12 items-center">
+      <div className="!max-w-auto !mx-auto! !px-6 grid lg:grid-cols-2 !gap-12 items-center">
         {/* Left */}
         <motion.div
           initial={{ opacity: 0, x: -80 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <p className="text-[#D4AF37] font-semibold !mb-4">
+          <p className="text-[#D4AF37] font-semibold !mb-4 !mt-4">
             Welcome to HostelHub
           </p>
 
           <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
             Find Your
-            <span className="text-[#D4AF37]"> Perfect Hostel</span>
+            <span className="text-[#D4AF37]"> Perfect Room</span>
           </h1>
 
-          <p className="text-gray-600 !mt-5 text-lg leading-8">
+          <p className="text-gray-600 !mt-5 text-lg !leading-8">
             Comfortable rooms, affordable prices, modern facilities and secure
             accommodation for students and working professionals.
           </p>

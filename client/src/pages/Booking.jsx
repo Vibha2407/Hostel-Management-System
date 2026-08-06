@@ -1,100 +1,64 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { createBooking } from "../services/bookingService";
-import toast from "react-hot-toast";
+import { getRoomById } from "../services/roomService";
 import { useNavigate } from "react-router-dom";
+
+import RoomBookingInfo from "../components/booking/RoomBookingInfo";
+import BookingForm from "../components/booking/BookingForm";
+import BookingSummary from "../components/booking/BookingSummary";
 
 const Booking = () => {
   const { id } = useParams();
-  const [checkInDate, setCheckInDate] = useState("");
-  const [checkOutDate, setCheckOutDate] = useState("");
 
-  const [bookingType, setBookingType] = useState("Daily");
-
-  const [numberOfGuests, setNumberOfGuests] = useState(1);
-
-  const [specialRequest, setSpecialRequest] = useState("");
+  const [room, setRoom] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [bookingData, setBookingData] = useState({
+    checkInDate: "",
+    checkOutDate: "",
+    bookingType: "Daily",
+    numberOfGuests: 1,
+    specialRequest: "",
+  });
 
-    try {
-      const bookingData = {
-        room: id,
-        checkInDate,
-        checkOutDate,
-        bookingType,
-        numberOfGuests,
-        specialRequest,
-      };
+  useEffect(() => {
+    const fetchRoom = async () => {
+      const data = await getRoomById(id);
+      setRoom(data.room);
+    };
 
-      const data = await createBooking(bookingData);
+    fetchRoom();
+  }, [id]);
 
-      toast.success(data.message);
-
-      navigate("/customer/bookings");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Booking failed");
-    }
-  };
+  if (!room) return <h2>Loading...</h2>;
 
   return (
-    <div className="max-w-5xl mx-auto py-12 px-6">
-      <h1 className="text-4xl font-bold mb-8">Book Your Room</h1>
+    <section className="!max-w-7xl !mx-auto !py-12 !px-6">
+      <h1 className="text-4xl font-bold !mb-10">Book Your Room</h1>
 
-      <form onSubmit={handleSubmit} className="grid md:grid-cols-2 !gap-6">
-        <input
-          type="date"
-          value={checkInDate}
-          onChange={(e) => setCheckInDate(e.target.value)}
-          className="border !p-3 rounded-lg"
-        />
-        <input
-          type="date"
-          value={checkOutDate}
-          onChange={(e) => setCheckOutDate(e.target.value)}
-          className="border !p-3 rounded-lg"
-        />
-        <select
-          value={bookingType}
-          onChange={(e) => setBookingType(e.target.value)}
-          className="border !p-3 rounded-lg"
-        >
-          <option>Daily</option>
-          <option>Weekly</option>
-          <option>Monthly</option>
-        </select>
+      <div className="grid lg:grid-cols-3 !gap-8">
+        <RoomBookingInfo room={room} />
 
-        {/* <input placeholder="Full Name" className="border p-3 rounded-lg" />
-
-        <input placeholder="Phone" className="border p-3 rounded-lg" />
-
-        <input placeholder="Email" className="border p-3 rounded-lg" /> */}
-
-        <input
-          type="number"
-          min="1"
-          value={numberOfGuests}
-          onChange={(e) => setNumberOfGuests(Number(e.target.value))}
-          className="border !p-3 rounded-lg"
+        <BookingForm
+          bookingData={bookingData}
+          setBookingData={setBookingData}
         />
 
-        <textarea
-          rows={5}
-          value={specialRequest}
-          onChange={(e) => setSpecialRequest(e.target.value)}
-          className="border !p-3 rounded-lg md:col-span-2"
+        <BookingSummary
+          room={room}
+          bookingData={bookingData}
+          onProceed={(amount) => {
+            navigate("/payment", {
+              state: {
+                room,
+                bookingData,
+                totalAmount: amount,
+              },
+            });
+          }}
         />
-
-        <button
-          type="submit"
-          className="bg-[#D4AF37] text-white !py-4 rounded-lg !md:col-span-2"
-        >
-          Confirm Booking
-        </button>
-      </form>
-    </div>
+      </div>
+    </section>
   );
 };
 

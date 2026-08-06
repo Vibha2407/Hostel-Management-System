@@ -1,63 +1,40 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getMyBookings } from "../../services/bookingService";
+import BookingCard from "../../components/customer/BookingCard";
 
-const BookingCard = ({ room }) => {
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+const MyBookings = () => {
+  const [bookings, setBookings] = useState([]);
 
-  const calculateDays = () => {
-    if (!checkIn || !checkOut) return 0;
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const data = await getMyBookings();
+        setBookings(data.bookings);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-
-    const diff = end - start;
-
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  };
-
-  const totalDays = calculateDays();
-
-  const totalPrice = totalDays * room.pricePerDay;
+    fetchBookings();
+  }, []);
 
   return (
-    <div className="bg-white shadow-xl rounded-2xl !p-6 sticky top-24">
-      <h2 className="text-2xl font-bold !mb-6">Book This Room</h2>
-      <label className="block !mb-2 font-medium">Check In</label>
-      <input
-        type="date"
-        value={checkIn}
-        onChange={(e) => setCheckIn(e.target.value)}
-        className="w-full border rounded-lg !p-3 !mb-5"
-      />
-      <label className="block !mb-2 font-medium">Check Out</label>
-      <input
-        type="date"
-        value={checkOut}
-        onChange={(e) => setCheckOut(e.target.value)}
-        className="w-full border rounded-lg !p-3 !mb-5"
-      />
-      <hr className="!my-5" />
-      <p className="!mb-3">
-        Price Per Day:
-        <strong> ₹{room.pricePerDay}</strong>
-      </p>
-      <p className="!mb-3">
-        Total Days:
-        <strong> {totalDays}</strong>
-      </p>
-      <p className="text-xl font-bold !mb-6">
-        Total:
-        <span className="text-[#D4AF37]"> ₹{totalPrice}</span>
-      </p>
-      <Link
-        to={`/booking/${room._id}`}
-        className="bg-[#D4AF37] text-white px-10 py-4 rounded-xl inline-block"
-      >
-        Book Now
-      </Link>
-    </div>
+    <section className="!max-w-7xl !mx-auto !px-6 !py-10">
+      <h1 className="text-4xl font-bold !mb-10">My Bookings</h1>
+
+      <div className="space-y-8">
+        {bookings.length === 0 ? (
+          <div className="text-center !py-20 text-gray-500">
+            No bookings available.
+          </div>
+        ) : (
+          bookings.map((booking) => (
+            <BookingCard key={booking._id} booking={booking} />
+          ))
+        )}
+      </div>
+    </section>
   );
 };
 
-export default BookingCard;
+export default MyBookings;

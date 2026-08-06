@@ -155,3 +155,36 @@ export const logout = async (req, res) => {
     message: "Logged out successfully.",
   });
 };
+export const updateProfile = async (req, res) => {
+  try {
+    const { fullName, phone, gender, dob, address } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    user.fullName = fullName;
+    user.phone = phone;
+    user.gender = gender;
+    user.dob = dob;
+    user.address = address;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully.",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

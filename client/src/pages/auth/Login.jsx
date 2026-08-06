@@ -3,14 +3,18 @@ import { loginUser } from "../../services/authService";
 // import { loginUser } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const { fetchProfile } = useContext(AuthContext);
 
   const navigate = useNavigate();
+  // const { fetchProfile } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({
@@ -21,24 +25,27 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
 
     try {
-      const data = await loginUser(formData);
+      await loginUser(formData);
 
-      console.log(data);
+      const profile = await fetchProfile();
 
-      toast.success(data.message);
-
-      if (data.user.role === "admin") {
+      toast.success("Login Successful");
+      if (profile.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/customer");
       }
     } catch (error) {
+      // return null;
       console.log(error);
 
-      toast.error(error.response?.data?.message || "Login Failed");
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
+      );
     }
   };
 

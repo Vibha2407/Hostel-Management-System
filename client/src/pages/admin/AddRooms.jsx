@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createRoom } from "../../services/roomService";
+import { openCloudinaryWidget } from "../../utils/cloudinary";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -47,10 +48,17 @@ const AddRoom = () => {
   const [roomImages, setRoomImages] = useState([]);
   const navigate = useNavigate();
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+  // const handleImageChange = (e) => {
+  //   const files = Array.from(e.target.files);
 
-    setRoomImages(files);
+  //   setRoomImages(files);
+  // };
+
+  // adding cloudinary imege function
+  const uploadImages = () => {
+    openCloudinaryWidget((imageUrl) => {
+      setRoomImages((prev) => [...prev, imageUrl]);
+    });
   };
 
   // Handle Inputs
@@ -77,22 +85,46 @@ const AddRoom = () => {
   };
 
   // Submit
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const roomData = {
+  //       ...formData,
+  //       roomImages,
+
+  //       // We are only previewing images for now,
+  //       // so send an empty array to the backend.
+  //       // roomImages: [],
+  //     };
+
+  //     console.log("Sending Data:", roomData);
+
+  //     const data = await createRoom(roomData);
+  //     console.log(JSON.stringify(roomData, null, 2));
+
+  //     toast.success(data.message);
+
+  //     navigate("/admin/rooms");
+  //   } catch (error) {
+  //     console.log(error);
+
+  //     toast.error(error.response?.data?.message || "Failed to create room.");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const roomData = {
         ...formData,
-
-        // We are only previewing images for now,
-        // so send an empty array to the backend.
-        roomImages: [],
+        roomImages,
       };
 
-      console.log("Sending Data:", roomData);
+      console.log("Sending Room Data:", roomData);
 
       const data = await createRoom(roomData);
-      console.log(JSON.stringify(roomData, null, 2));
 
       toast.success(data.message);
 
@@ -100,12 +132,11 @@ const AddRoom = () => {
     } catch (error) {
       console.log(error);
 
-      toast.error(error.response?.data?.message || "Failed to create room.");
+      toast.error(error.response?.data?.message || "Failed to create room");
     }
   };
-
   return (
-    <div className="max-w-5xl !mx-auto !p-8">
+    <div className="!max-w-5xl !mx-auto !p-8">
       <h1 className="text-3xl font-bold !mb-8">Add Room</h1>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-2 !gap-5">
@@ -245,13 +276,20 @@ const AddRoom = () => {
         <div className="col-span-2">
           <h2 className="text-xl font-semibold !mb-4">Room Images</h2>
 
-          <input
+          {/* <input
             type="file"
             multiple
             accept="image/*"
             onChange={handleImageChange}
             className="border !p-3 rounded-lg w-full"
-          />
+          /> */}
+          <button
+            type="button"
+            onClick={uploadImages}
+            className="bg-blue-600 text-white !px-5 !py-3 rounded-lg"
+          >
+            Upload Images
+          </button>
 
           <div className="grid grid-cols-2 md:grid-cols-4 !gap-4 !mt-5">
             {roomImages.map((image, index) => (
@@ -259,8 +297,14 @@ const AddRoom = () => {
                 key={index}
                 className="relative rounded-xl overflow-hidden border"
               >
-                <img
+                {/* <img
                   src={URL.createObjectURL(image)}
+                  alt="Room"
+                  className="h-40 w-full object-cover"
+                /> */}
+
+                <img
+                  src={image}
                   alt="Room"
                   className="h-40 w-full object-cover"
                 />

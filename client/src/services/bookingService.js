@@ -17,3 +17,11 @@ export const getMyBookings = async () => {
     throw error;
   }
 };
+export const cancelBooking = async (id) => {
+  try {
+    const response = await api.put(`/bookings/cancel/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
