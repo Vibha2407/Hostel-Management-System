@@ -4,7 +4,7 @@ const facilitySchema = new mongoose.Schema(
   {
     wifi: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     parking: {
@@ -19,7 +19,7 @@ const facilitySchema = new mongoose.Schema(
 
     food: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     juiceCorner: {
@@ -29,25 +29,36 @@ const facilitySchema = new mongoose.Schema(
 
     bikeParking: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     scootyParking: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     powerBackup: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     hotWater: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     cctv: {
+      type: Boolean,
+      default: false,
+    },
+
+    icon: {
+      type: String,
+      default: "Sparkles",
+      trim: true,
+    },
+
+    isActive: {
       type: Boolean,
       default: true,
     },

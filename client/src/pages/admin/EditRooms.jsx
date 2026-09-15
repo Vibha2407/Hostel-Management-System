@@ -22,6 +22,7 @@ const EditRoom = () => {
   const [formData, setFormData] = useState({
     roomNumber: "",
     floor: "",
+    wingGender: "Male",
     roomType: "AC",
     sharingType: "2 Sharing",
     totalBeds: "",
@@ -76,6 +77,7 @@ const EditRoom = () => {
         roomNumber: data.room.roomNumber,
         floor: data.room.floor,
         roomType: data.room.roomType,
+        wingGender: data.room.wingGender,
         sharingType: data.room.sharingType,
         totalBeds: data.room.totalBeds,
         availableBeds: data.room.availableBeds,

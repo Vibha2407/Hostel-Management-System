@@ -1,23 +1,5 @@
 import Room from "../models/Room.js";
-// import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
-// Create Room
-// export const createRoom = async (req, res) => {
-//   try {
-//     const room = await Room.create(req.body);
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Room created successfully.",
-//       room,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
 import Booking from "../models/Booking.js";
 export const createRoom = async (req, res) => {
   try {
@@ -44,9 +26,11 @@ export const createRoom = async (req, res) => {
   }
 };
 // Get All Rooms
+//
+
 export const getAllRooms = async (req, res) => {
   try {
-    const rooms = await Room.find().populate("rules");
+    const rooms = await Room.find({}).populate("rules");
 
     res.status(200).json({
       success: true,
@@ -89,7 +73,7 @@ export const getSingleRoom = async (req, res) => {
 export const updateRoom = async (req, res) => {
   try {
     const room = await Room.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 
@@ -167,52 +151,104 @@ export const deleteRoom = async (req, res) => {
     });
   }
 };
+// export const filterRooms = async (req, res) => {
+//   try {
+//     const { roomType, sharingType, status, minPrice, maxPrice, roomNumber } =
+//       req.query;
+
+//     let filter = {};
+
+//     // Room Type
+//     if (roomType) {
+//       filter.roomType = roomType;
+//     }
+
+//     // Sharing Type
+//     if (sharingType) {
+//       filter.sharingType = sharingType;
+//     }
+
+//     // Status
+//     if (status) {
+//       filter.status = status;
+//     }
+
+//     // Room Number Search
+//     if (roomNumber) {
+//       filter.roomNumber = {
+//         $regex: roomNumber,
+//         $options: "i",
+//       };
+//     }
+
+//     // Price Filter
+//     if (minPrice || maxPrice) {
+//       filter.pricePerMonth = {};
+
+//       if (minPrice) {
+//         filter.pricePerMonth.$gte = Number(minPrice);
+//       }
+
+//       if (maxPrice) {
+//         filter.pricePerMonth.$lte = Number(maxPrice);
+//       }
+//     }
+
+//     const rooms = await Room.find(filter)
+//       // .populate("facilities")
+//       .populate("rules");
+
+//     res.status(200).json({
+//       success: true,
+//       totalRooms: rooms.length,
+//       rooms,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 export const filterRooms = async (req, res) => {
   try {
-    const { roomType, sharingType, status, minPrice, maxPrice, roomNumber } =
-      req.query;
+    const { roomType, sharingType, wingGender, status } = req.query;
 
-    let filter = {};
+    const filter = {};
 
-    // Room Type
-    if (roomType) {
+    // ==============================
+    // ROOM TYPE
+    // All = no filter
+    // ==============================
+    if (roomType && roomType !== "All") {
       filter.roomType = roomType;
     }
 
-    // Sharing Type
-    if (sharingType) {
+    // ==============================
+    // SHARING TYPE
+    // All = no filter
+    // ==============================
+    if (sharingType && sharingType !== "All") {
       filter.sharingType = sharingType;
     }
 
-    // Status
-    if (status) {
+    // ==============================
+    // WING / GENDER
+    // All = no filter
+    // ==============================
+    if (wingGender && wingGender !== "All") {
+      filter.wingGender = wingGender;
+    }
+
+    // ==============================
+    // STATUS
+    // All = no filter
+    // ==============================
+    if (status && status !== "All") {
       filter.status = status;
     }
 
-    // Room Number Search
-    if (roomNumber) {
-      filter.roomNumber = {
-        $regex: roomNumber,
-        $options: "i",
-      };
-    }
-
-    // Price Filter
-    if (minPrice || maxPrice) {
-      filter.pricePerMonth = {};
-
-      if (minPrice) {
-        filter.pricePerMonth.$gte = Number(minPrice);
-      }
-
-      if (maxPrice) {
-        filter.pricePerMonth.$lte = Number(maxPrice);
-      }
-    }
-
-    const rooms = await Room.find(filter)
-      // .populate("facilities")
-      .populate("rules");
+    const rooms = await Room.find(filter).populate("rules");
 
     res.status(200).json({
       success: true,

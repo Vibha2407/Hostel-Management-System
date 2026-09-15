@@ -11,12 +11,12 @@ const AuthProvider = ({ children }) => {
     try {
       const data = await getProfile();
 
-      console.log("PROFILE API RESPONSE", data);
+      // console.log("PROFILE API RESPONSE", data);
 
       setUser(data.user);
       return data.user;
     } catch (error) {
-      console.log("PROFILE ERROR", error);
+      // console.log("PROFILE ERROR", error);
 
       setUser(null);
     } finally {

@@ -1,5 +1,6 @@
 import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
+import Payment from "../models/Payment.js";
 
 export const createBooking = async (req, res) => {
   try {
@@ -21,22 +22,19 @@ export const createBooking = async (req, res) => {
       });
     }
 
+    // Gender compatibility check
+    if (
+      req.user.role === "customer" &&
+      selectedRoom.wingGender !== req.user.gender
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not eligible to book this room.",
+      });
+    }
+
     // Check available beds
-    const availableBeds = selectedRoom.totalBeds - selectedRoom.occupiedBeds;
-
-    if (availableBeds <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Room is full.",
-      });
-    }
-
-    if (numberOfGuests > availableBeds) {
-      return res.status(400).json({
-        success: false,
-        message: "Not enough beds available.",
-      });
-    }
+    // const availableBeds = selectedRoom.totalBeds - selectedRoom.occupiedBeds;
 
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);
@@ -48,7 +46,48 @@ export const createBooking = async (req, res) => {
       });
     }
 
+    // Find bookings that overlap with the requested dates
+    const overlappingBookings = await Booking.find({
+      room: room,
+
+      bookingStatus: {
+        $in: ["Pending", "Confirmed", "Checked-In"],
+      },
+
+      checkInDate: {
+        $lt: checkOut,
+      },
+
+      checkOutDate: {
+        $gt: checkIn,
+      },
+    });
+
+    const alreadyBookedBeds = overlappingBookings.reduce(
+      (total, booking) => total + booking.numberOfGuests,
+      0,
+    );
+
+    const availableBedsForDates = selectedRoom.totalBeds - alreadyBookedBeds;
+
+    if (availableBedsForDates <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No beds are available for the selected dates.",
+      });
+    }
+
+    if (numberOfGuests > availableBedsForDates) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${availableBedsForDates} bed(s) are available for the selected dates.`,
+      });
+    }
+
     const totalDays = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+
+    // Admin confirmation deadline: 24 hours
+    const confirmationDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     let totalAmount = 0;
 
@@ -81,8 +120,12 @@ export const createBooking = async (req, res) => {
       numberOfGuests,
       specialRequest,
       totalAmount,
-      paymentStatus: "Paid",
-      bookingStatus: "Confirmed",
+
+      paymentStatus: "Pending",
+      bookingStatus: "Pending",
+
+      confirmationDeadline,
+
       refundStatus: "Not Required",
     });
 
@@ -104,7 +147,7 @@ export const createBooking = async (req, res) => {
       },
       {
         path: "room",
-        select: "roomNumber roomType sharingType",
+        select: "roomNumber roomType sharingType wingGender",
       },
     ]);
 
@@ -126,8 +169,41 @@ export const getMyBookings = async (req, res) => {
     const bookings = await Booking.find({
       user: req.user._id,
     })
+      .populate("user", "fullName email phone")
       .populate("room")
       .sort({ createdAt: -1 });
+
+    // Get payments for these bookings
+    const bookingIds = bookings.map((booking) => booking._id);
+
+    const payments = await Payment.find({
+      booking: { $in: bookingIds },
+    }).select(
+      "_id booking amount paymentMethod transactionId receiptNumber paymentStatus paymentDate",
+    );
+
+    // Attach payment information to each booking
+    const bookingsWithPayment = bookings.map((booking) => {
+      const payment = payments.find(
+        (payment) => payment.booking?.toString() === booking._id.toString(),
+      );
+
+      return {
+        ...booking.toObject(),
+
+        payment: payment
+          ? {
+              _id: payment._id,
+              amount: payment.amount,
+              paymentMethod: payment.paymentMethod,
+              transactionId: payment.transactionId,
+              receiptNumber: payment.receiptNumber,
+              paymentStatus: payment.paymentStatus,
+              paymentDate: payment.paymentDate,
+            }
+          : null,
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -180,6 +256,17 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
+    if (
+      booking.bookingStatus === "Checked-In" ||
+      booking.bookingStatus === "Checked-Out" ||
+      booking.bookingStatus === "Completed"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "This booking cannot be cancelled.",
+      });
+    }
+
     const room = await Room.findById(booking.room);
 
     if (!room) {
@@ -189,8 +276,14 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Prevent negative occupied beds
-    room.occupiedBeds = Math.max(room.occupiedBeds - booking.numberOfGuests, 0);
+    if (!booking.bedsReleased) {
+      room.occupiedBeds = Math.max(
+        room.occupiedBeds - booking.numberOfGuests,
+        0,
+      );
+
+      booking.bedsReleased = true;
+    }
 
     if (room.occupiedBeds < room.totalBeds) {
       room.status = "Available";
@@ -250,7 +343,19 @@ export const confirmBooking = async (req, res) => {
       });
     }
 
+    if (
+      booking.confirmationDeadline &&
+      booking.confirmationDeadline <= new Date()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "This booking has expired and can no longer be confirmed.",
+      });
+    }
+
     booking.bookingStatus = "Confirmed";
+
+    booking.confirmationDeadline = null; // Clear the confirmation deadline since it's now confirmed
 
     await booking.save();
 

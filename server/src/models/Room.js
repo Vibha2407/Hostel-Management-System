@@ -26,6 +26,11 @@ const roomSchema = new mongoose.Schema(
       enum: ["2 Sharing", "3 Sharing", "4 Sharing"],
       required: true,
     },
+    wingGender: {
+      type: String,
+      enum: ["Male", "Female"],
+      required: [true, "Wing gender is required."],
+    },
 
     pricePerDay: {
       type: Number,

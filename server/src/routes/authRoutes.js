@@ -4,6 +4,8 @@ import {
   login,
   logout,
   getProfile,
+  updateProfile,
+  changePassword,
 } from "../controller/authController.js";
 import { isAuthenticated } from "../middleware/auth.middleware.js";
 
@@ -18,6 +20,9 @@ router.post("/logout", logout);
 
 // Get logged-in user's profile
 router.get("/profile", isAuthenticated, getProfile);
+
+router.put("/profile", isAuthenticated, updateProfile);
+router.put("/change-password", isAuthenticated, changePassword);
 
 // Update logged-in user's profile
 // router.put("/profile", isAuthenticated, updateProfile);

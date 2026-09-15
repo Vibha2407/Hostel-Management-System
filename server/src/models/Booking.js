@@ -49,6 +49,11 @@ const bookingSchema = new mongoose.Schema(
       min: 1,
     },
 
+    bedsReleased: {
+      type: Boolean,
+      default: false,
+    },
+
     totalAmount: {
       type: Number,
       required: true,
@@ -66,6 +71,11 @@ const bookingSchema = new mongoose.Schema(
         "Cancelled",
       ],
       default: "Pending",
+    },
+
+    confirmationDeadline: {
+      type: Date,
+      default: null,
     },
 
     refundAmount: {
@@ -87,10 +97,6 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ["Not Required", "Initiated", "Completed"],
       default: "Not Required",
-    },
-
-    refundDate: {
-      type: Date,
     },
 
     specialRequest: {

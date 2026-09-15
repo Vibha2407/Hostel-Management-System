@@ -1,8 +1,13 @@
 export const COLORS = {
-  white: "#FFFFFF",
-  charcoal: "#2C2C2C",
-  gold: "#D4AF37",
-  lightGray: "#F8F9FA",
+  primary: "#4A1D2F",
+  accent: "#D6B36A",
+  background: "#FAF8F4",
+  surface: "#FFFFFF",
+  text: "#2B1720",
+  textMuted: "#74656A",
+  border: "#E8DED2",
+  accentSoft: "#F4EBDD",
+  error: "#B94A48",
 };
 
 export const FONTS = {

@@ -1,8 +1,10 @@
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 const MainLayout = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
   return (
     <>
       <Navbar />
@@ -10,8 +12,7 @@ const MainLayout = () => {
       <main className="min-h-screen">
         <Outlet />
       </main>
-
-      <Footer />
+      {!isHomePage && <Footer />}
     </>
   );
 };

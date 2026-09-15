@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import app from "./app.js";
 import connectDB from "./config/db.js";
+import bookingCleanup from "./services/bookingCleanup.js";
 
 dotenv.config();
 

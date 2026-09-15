@@ -5,6 +5,9 @@ import Dashboard from "../pages/customer/Dashboard";
 import Profile from "../pages/customer/Profle";
 import MyBookings from "../pages/customer/MyBookings";
 import Receipt from "../pages/customer/Receipt";
+import Settings from "../pages/customer/Settings";
+import Complaints from "../pages/customer/Complaint";
+import Error404 from "../pages/NotFound";
 
 const CustomerRoutes = () => {
   return (
@@ -19,7 +22,11 @@ const CustomerRoutes = () => {
         <Route path="my-bookings" element={<MyBookings />} />
 
         <Route path="receipt" element={<Receipt />} />
+        <Route path="complaints" element={<Complaints />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
+      {/* Unknown customer route */}
+      <Route path="*" element={<Error404 />} />
     </Routes>
   );
 };

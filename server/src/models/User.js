@@ -41,8 +41,10 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other"],
-      required: [true, "Gender is required."],
+      enum: ["Male", "Female"],
+      required: function () {
+        return this.role === "customer";
+      },
     },
     profileImage: {
       type: String,
@@ -78,6 +80,7 @@ userSchema.pre("save", async function (next) {
   }
 
   this.password = await bcrypt.hash(this.password, 10);
+  next;
 });
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);

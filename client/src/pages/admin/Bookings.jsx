@@ -1,7 +1,8 @@
 import React from "react";
+import ManageBookings from "../../components/admin/ManageBookings";
 
 const Bookings = () => {
-  return <div>admin Bookind</div>;
+  return <ManageBookings />;
 };
 
 export default Bookings;

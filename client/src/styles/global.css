@@ -1,27 +1,78 @@
 @import "tailwindcss";
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-background: #fafaf8;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f3f3f1;
+  --color-text-primary: #2c2c2c;
+  --color-text-secondary: #666666;
+  --color-text-muted: #777777;
+  --color-border: #e8e8e6;
+  --color-primary: #d4af37;
+  --color-primary-hover: #e7c95c;
+  --color-success: #4cb39b;
+  --color-danger: #b94a48;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
-body{
-    font-family: "Inter", sans-serif;
-    background:#FFFFFF;
-    color:#2C2C2C;
+.dark {
+  --color-background: #080808;
+  --color-surface: #111111;
+  --color-surface-secondary: #171717;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #777777;
+  --color-text-muted: #555555;
+  --color-border: #292929;
+  --color-primary: #d4af37;
+  --color-primary-hover: #e7c95c;
+  --color-success: #5bc7ab;
+  --color-danger: #f87171;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
-a{
-    text-decoration:none;
-    color:inherit;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-button{
-    cursor:pointer;
+body {
+  font-family: "Manrope", sans-serif;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-img{
-    max-width:100%;
-    display:block;
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.booking-input {
+  @apply !w-full !rounded-xl !border !border-[#292929] !bg-[#181818] !px-4 !py-3.5 !text-sm !text-white !outline-none !transition-all !duration-300;
+}
+
+.booking-input:focus {
+  @apply !border-[#D4AF37]/60 !shadow-[0_0_0_3px_rgba(212,175,55,0.08)];
+}
+
+.booking-input::placeholder {
+  @apply !text-[#555555];
+}
+
+.booking-input option {
+  @apply !bg-[#181818] !text-white;
 }

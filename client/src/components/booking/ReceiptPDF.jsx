@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { formatDate } from "../../utils/formatDate";
 
 const styles = StyleSheet.create({
   page: {
@@ -94,13 +95,13 @@ const ReceiptPDF = ({ booking }) => (
       <View style={styles.row}>
         <Text style={styles.label}>Check In</Text>
 
-        <Text>{new Date(booking.checkInDate).toLocaleDateString()}</Text>
+        <Text>{formatDate(booking.checkInDate)}</Text>
       </View>
 
       <View style={styles.row}>
         <Text style={styles.label}>Check Out</Text>
 
-        <Text>{new Date(booking.checkOutDate).toLocaleDateString()}</Text>
+        <Text>{formatDate(booking.checkOutDate)}</Text>
       </View>
 
       <View style={styles.row}>
@@ -127,7 +128,7 @@ const ReceiptPDF = ({ booking }) => (
         <Text>{booking.bookingStatus}</Text>
       </View>
 
-      <Text style={styles.footer}>Thank you for choosing HostelHub ❤️</Text>
+      <Text style={styles.footer}>Thank you for choosing HostelHub "❤️"</Text>
     </Page>
   </Document>
 );
