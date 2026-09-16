@@ -17,9 +17,22 @@ import complaintRoutes from "./routes/complaintRoutes.js";
 const app = express();
 
 // Middleware
+//
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://hostel-management-system-30aegh3x0-vibha2407s-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
