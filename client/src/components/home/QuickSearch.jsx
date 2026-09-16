@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getAllRooms } from "../../services/roomService";
-import axios from "axios";
+// import axios from "axios";
 import RoomGrid from "../room/RoomGrid";
 import api from "../../services/axios";
 
@@ -13,7 +13,7 @@ const QuickSearch = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/rooms");
+      const response = await axios.get("/rooms");
       console.log(response.data);
       setRooms(response.data.rooms);
     } catch (error) {
